@@ -1,0 +1,3 @@
+name,email,password,role
+Administrador,admin@fhl.com,admin123,admin
+Analista,analyst@fhl.com,analyst123,analyst
