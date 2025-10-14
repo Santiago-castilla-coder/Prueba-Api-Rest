@@ -4,6 +4,8 @@ import {
   getCustomerByDocument,
   createCustomer,
 } from "../controllers/customer.controller";
+import { authMiddleware } from "../middlewares/auth.middleware"; 
+import { authorizeRole } from "../middlewares/role.middleware"; // mideleware rol
 
 const router = Router();
 
@@ -36,7 +38,7 @@ const router = Router();
  *                   - street: "Main St 123"
  *                     city: "Springfield"
  */
-router.get("/", getCustomers);
+router.get("/", authMiddleware, authorizeRole(["admin", "analyst"]), getCustomers);
 
 /**
  * @swagger
@@ -64,7 +66,7 @@ router.get("/", getCustomers);
  *       404:
  *         description: Customer not found
  */
-router.post("/find", getCustomerByDocument);
+router.post("/find", authMiddleware, authorizeRole(["admin", "analyst"]), getCustomerByDocument);
 
 /**
  * @swagger
@@ -89,6 +91,6 @@ router.post("/find", getCustomerByDocument);
  *       201:
  *         description: Customer created successfully
  */
-router.post("/", createCustomer);
+router.post("/", authMiddleware, authorizeRole(["admin"]), createCustomer);
 
 export default router;

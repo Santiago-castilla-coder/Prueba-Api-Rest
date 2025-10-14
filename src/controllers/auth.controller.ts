@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { User } from "../models/user.model";
-import { generateToken } from "../utils/token"; // si usas JWT
-
+import { generateToken } from "../utils/token";
 // 🔐 Registrar usuario
 export const register = async (req: Request, res: Response) => {
   try {

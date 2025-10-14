@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -6,20 +6,20 @@ dotenv.config();
 const SECRET = process.env.JWT_SECRET || "admin@123+";
 
 /**
- * Genera un token JWT con una duración de 1 hora.
- * @param payload Datos del usuario (id, role, etc.)
- * @returns Token JWT firmado
+ * Generate a JWT token valid for 1 hour.
+ * @param payload User data (id, role, etc.)
+ * @returns Signed JWT token
  */
-export const generateToken = (payload: object): string => {
+export const generateToken = (payload: Record<string, any>): string => {
   return jwt.sign(payload, SECRET, { expiresIn: "1h" });
 };
 
 /**
- * Verifica la validez de un token JWT.
- * @param token El token JWT recibido
- * @returns Datos del usuario si es válido, o null si no lo es
+ * Verify the validity of a JWT token.
+ * @param token The received JWT token
+ * @returns Decoded user data if valid, or null if invalid
  */
-export const verifyToken = (token: string) => {
+export const verifyToken = (token: string): JwtPayload | string | null => {
   try {
     return jwt.verify(token, SECRET);
   } catch {

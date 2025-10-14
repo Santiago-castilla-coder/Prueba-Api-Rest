@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { getProducts, createProduct } from "../controllers/product.controller";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorizeRole } from "../middlewares/role.middleware"; // Middleware de rol
 
 const router = Router();
 
@@ -29,7 +31,7 @@ const router = Router();
  *                 price: 1200.5
  *                 stock: 10
  */
-router.get("/", getProducts);
+router.get("/", authMiddleware, authorizeRole(["admin", "analyst"]), getProducts);
 
 /**
  * @swagger
@@ -51,6 +53,6 @@ router.get("/", getProducts);
  *       201:
  *         description: Product created successfully
  */
-router.post("/", createProduct);
+router.post("/", authMiddleware, authorizeRole(["admin"]), createProduct);
 
 export default router;

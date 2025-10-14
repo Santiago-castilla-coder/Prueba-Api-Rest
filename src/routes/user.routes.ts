@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { getUsers } from "../controllers/user.controller";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorizeRole } from "../middlewares/role.middleware"; // Middleware de roles
 
 const router = Router();
 
@@ -14,7 +16,7 @@ const router = Router();
  * @swagger
  * /users:
  *   get:
- *     summary: Get all users
+ *     summary: Get all users (admin only)
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -30,6 +32,6 @@ const router = Router();
  *                 email: "admin@example.com"
  *                 role: "admin"
  */
-router.get("/", getUsers);
+router.get("/", authMiddleware, authorizeRole(["admin"]), getUsers);
 
 export default router;

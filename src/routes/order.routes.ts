@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { getOrders, createOrder } from "../controllers/order.controller";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { authorizeRole } from "../middlewares/role.middleware"; // Middleware de rol
 
 const router = Router();
 
@@ -31,7 +33,7 @@ const router = Router();
  *                   - product_id: 1
  *                     quantity: 2
  */
-router.get("/", getOrders);
+router.get("/", authMiddleware, authorizeRole(["admin", "analyst"]), getOrders);
 
 /**
  * @swagger
@@ -64,6 +66,6 @@ router.get("/", getOrders);
  *                 - product_id: 2
  *                   quantity: 3
  */
-router.post("/", createOrder);
+router.post("/", authMiddleware, authorizeRole(["admin"]), createOrder);
 
 export default router;

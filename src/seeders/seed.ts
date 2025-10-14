@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import csv from "csv-parser";
+import bcrypt from "bcryptjs"; // 👈 added for password hashing
 import { sequelize } from "../config/database";
 import { User } from "../models/user.model";
 import { Customer } from "../models/customer.model";
@@ -25,9 +26,9 @@ const loadCSV = (file: string) => {
 export const seedDatabase = async () => {
   try {
     await sequelize.sync({ force: true });
-    console.log("🧹 Tablas recreadas");
+    console.log("🧹 Tables recreated successfully");
 
-    // Cargar CSVs
+    // Load CSV files
     const users = await loadCSV("users.csv");
     const customers = await loadCSV("customers.csv");
     const addresses = await loadCSV("addresses.csv");
@@ -36,7 +37,14 @@ export const seedDatabase = async () => {
     const orders = await loadCSV("orders.csv");
     const orderProducts = await loadCSV("order_products.csv");
 
-    // Insertar datos en orden correcto
+    // 🔐 Hash user passwords before inserting
+    for (const user of users) {
+      if (user.password) {
+        user.password = await bcrypt.hash(user.password, 10);
+      }
+    }
+
+    // Insert data in correct order
     await User.bulkCreate(users);
     await Customer.bulkCreate(customers);
     await Address.bulkCreate(addresses);
@@ -45,12 +53,12 @@ export const seedDatabase = async () => {
     await Order.bulkCreate(orders);
     await OrderProduct.bulkCreate(orderProducts);
 
-    console.log("✅ Datos insertados correctamente en todas las tablas");
+    console.log("✅ Data inserted successfully into all tables");
   } catch (error) {
-    console.error("❌ Error al ejecutar seed:", error);
+    console.error("❌ Error running seed:", error);
   } finally {
     await sequelize.close();
-    console.log("🔒 Conexión cerrada");
+    console.log("🔒 Database connection closed");
   }
 };
 

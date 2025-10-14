@@ -24,7 +24,7 @@ const router = Router();
  *             username: "admin"
  *             name: "Administrator"
  *             email: "admin@example.com"
- *             password: "1234"
+ *             password: "admin123"
  *             role: "admin"
  *     responses:
  *       201:
