@@ -1,26 +1,23 @@
-import { Model, DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 
 export class User extends Model {
   public id!: number;
+  public username!: string;
   public name!: string;
   public email!: string;
   public password!: string;
-  public role!: "admin" | "analyst";
+  public role!: string;
 }
 
 User.init(
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    username: { type: DataTypes.STRING(50), unique: true, allowNull: false },
     name: { type: DataTypes.STRING(128), allowNull: false },
-    email: { type: DataTypes.STRING(128), allowNull: false, unique: true },
-    password: { type: DataTypes.STRING, allowNull: false },
-    role: { type: DataTypes.ENUM("admin", "analyst"), allowNull: false },
+    email: { type: DataTypes.STRING(128), unique: true, allowNull: false },
+    password: { type: DataTypes.STRING(255), allowNull: false },
+    role: { type: DataTypes.STRING(20), allowNull: false },
   },
-  {
-    sequelize,
-    tableName: "users",
-    freezeTableName: true,
-    timestamps: true,
-  }
+  { sequelize, modelName: "user", tableName: "users", timestamps: true }
 );

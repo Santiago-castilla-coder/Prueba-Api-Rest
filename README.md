@@ -1,88 +1,95 @@
-# Backend API REST - FHL
+# Backend REST API - FHL
 
-API para gestionar órdenes de entrega con **Node.js, Express, TypeScript, Sequelize y PostgreSQL**.
-
----
-
-## 🔧 Requisitos
-
-- **Node.js** >= 18  
-- **npm** >= 9  
-- **PostgreSQL**  
+API to manage delivery orders using **Node.js, Express, TypeScript, Sequelize, and PostgreSQL**.
 
 ---
 
-## 📥 Instalación
+##  Requirements
 
-1. **Instala todas las dependencias:**
-
-   ```bash
-   npm install
-   ```
-
-2. **Crea un archivo `.env` en la raíz del proyecto basado en `.env.example`:**
-
-   ```env
-   DB_NAME=fhl_db
-   DB_USER=postgres
-   DB_PASSWORD=tu_contraseña
-   DB_HOST=localhost
-   PORT=3000
-   JWT_SECRET=tu_secreto
-   ```
+- Node.js >= 18  
+- npm >= 9  
+- PostgreSQL  
 
 ---
 
-## 🏗️ Preparar la base de datos
+##  Installation
 
-1. Asegúrate de que PostgreSQL esté corriendo y crea la base de datos:
+1. Install all dependencies:
 
-   ```sql
-   CREATE DATABASE fhl_db;
-   ```
+```bash
+npm install
+```
 
-2. Ejecuta el seeder para poblar datos iniciales:
+2. Create a `.env` file at the root of the project based on `.env.example`:
 
-   ```bash
-   npm run seed
-   ```
+```
+DB_NAME=fhl_db
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_HOST=localhost
+PORT=3000
+JWT_SECRET=your_secret
+```
 
-   Esto creará tablas (`users`, `customers`, `addresses`, `products`, `warehouses`, `orders`, `order_products`) y cargará datos de prueba.
+###  Prepare the Database
+
+Make sure PostgreSQL is running and create the database:
+
+```sql
+CREATE DATABASE fhl_db;
+```
+
+Run the seeder to populate initial data:
+
+```bash
+npm run seed
+```
+
+This will create tables (`users`, `customers`, `addresses`, `products`, `warehouses`, `orders`, `order_products`) and insert sample data.
 
 ---
 
-## 🚀 Levantar el servidor
+##  Start the Server
 
-En modo desarrollo:
+For development mode:
 
 ```bash
 npm run dev
+
+and  seeder
+
+npm run see
 ```
 
-Servidor disponible en: [http://localhost:3000](http://localhost:3000)
+Server available at:
 
-Swagger (documentación API) disponible en: [http://localhost:3000/docs](http://localhost:3000/docs)
+```
+http://localhost:3000
+```
 
----
+Swagger API documentation available at:
 
-## 🧩 Scripts disponibles
-
-| Comando           | Descripción                               |
-|-------------------|-------------------------------------------|
-| `npm run dev`     | Levanta el servidor en modo desarrollo    |
-| `npm run build`   | Compila TypeScript a JavaScript           |
-| `npm start`       | Ejecuta la versión compilada              |
-| `npm run seed`    | Población inicial de la base de datos     |
+```
+http://localhost:3000/docs
+```
 
 ---
 
-## 📦 Dependencias principales
+## 🧩 Available Scripts
+
+- `npm run dev` — Starts the server in development mode  
+
+- `npm run seed` — Populates the database with initial data
+
+---
+
+## 📦 Main Dependencies
 
 ```bash
 npm install express cors dotenv sequelize pg jsonwebtoken bcryptjs csv-parser swagger-jsdoc swagger-ui-express
 ```
 
-## 📦 DevDependencies (TypeScript y tipos)
+DevDependencies (TypeScript and types):
 
 ```bash
 npm install -D typescript ts-node-dev @types/node @types/express @types/cors @types/jsonwebtoken @types/bcryptjs @types/swagger-jsdoc @types/swagger-ui-express @types/dotenv
@@ -90,21 +97,66 @@ npm install -D typescript ts-node-dev @types/node @types/express @types/cors @ty
 
 ---
 
-## 📂 Estructura del proyecto
+## 📂 Project Structure (Suggested)
 
 ```
 src/
- ├─ config/          # Configuración de DB, Swagger, etc.
- ├─ models/          # Modelos Sequelize
- ├─ routes/          # Rutas Express
- ├─ controllers/     # Lógica de endpoints
- ├─ seeders/         # Scripts para poblar datos
- ├─ app.ts           # Configuración de Express
- └─ server.ts        # Punto de entrada del servidor
+ ├─ config/
+ ├─ models/
+ ├─ routes/
+ ├─ controllers/
+ ├─ seeders/
+ ├─ app.ts
+ └─ server.ts
 ```
 
 ---
 
-## 👨‍💻 Autor
+## 🔐 Authentication
 
-**Nombre:** Santiago
+Use JWT for authentication (`jsonwebtoken`) and `bcryptjs` for password hashing.
+
+---
+
+## 🗂 Main Tables Overview
+
+- `users` — system administrators/operators  
+- `customers` — clients receiving orders  
+- `addresses` — addresses related to customers and warehouses  
+- `products` — products available for shipment  
+- `warehouses` — warehouses managing stock  
+- `orders` — delivery orders  
+- `order_products` — N:M relationship between orders and products (quantity, price per item)
+
+---
+
+# 🧩 Fragment 2 — Entity–Relationship Diagram
+
+
+## 📈 Entity–Relationship Diagram (ERD)
+
+The following diagram represents the main entities and their relationships
+within the FHL delivery management system.
+
+![ER Diagram](./src/doc/Diagrama_entidad_relacion.png)
+
+### **Entities Overview**
+- **users** → System administrators and operators  
+- **customers** → Clients who receive orders  
+- **addresses** → Linked to customers and warehouses  
+- **warehouses** → Storage and shipping locations  
+- **products** → Items available for delivery  
+- **orders** → Delivery orders created by users  
+- **order_products** → Junction table (N:M) between orders and products  
+
+> 💡 The `order_products` table defines the many-to-many relationship  
+> between `orders` and `products`, including fields such as quantity and unit price.
+
+
+
+
+---
+
+## Author
+
+Santiago

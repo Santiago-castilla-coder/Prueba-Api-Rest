@@ -1,26 +1,69 @@
 import { Router } from "express";
-import {
-  createOrder,
-  getOrders,
-  getOrderHistoryByCustomer,
-  changeOrderStatus
-} from "../controllers/order.controller";
-import { authMiddleware } from "../middlewares/auth.middleware";
-import { checkRole } from "../middlewares/role.middleware";
-import { checkStockForOrder } from "../middlewares/order.middleware";
+import { getOrders, createOrder } from "../controllers/order.controller";
 
 const router = Router();
 
-// Listar todas (admin + analyst)
-router.get("/", authMiddleware, checkRole(["admin", "analyst"]), getOrders);
+/**
+ * @swagger
+ * tags:
+ *   name: Orders
+ *   description: Order and delivery management
+ */
 
-// Crear orden (solo admin) — middleware valida stock
-router.post("/", authMiddleware, checkRole(["admin"]), checkStockForOrder, createOrder);
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     summary: Get all orders with related customer, warehouse, and products
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all orders
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: 1
+ *                 customer_id: 1
+ *                 warehouse_id: 1
+ *                 products:
+ *                   - product_id: 1
+ *                     quantity: 2
+ */
+router.get("/", getOrders);
 
-// Cambiar estado (admin + analyst — analyst solo puede actualizar estado)
-router.patch("/:id/status", authMiddleware, checkRole(["admin", "analyst"]), changeOrderStatus);
-
-// Historial por cliente (consultar todas las órdenes de un cliente)
-router.get("/history/:customer_id", authMiddleware, checkRole(["admin", "analyst"]), getOrderHistoryByCustomer);
+/**
+ * @swagger
+ * /orders:
+ *   post:
+ *     summary: Create a new order with products
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             customer_id: 1
+ *             warehouse_id: 1
+ *             products:
+ *               - product_id: 2
+ *                 quantity: 3
+ *     responses:
+ *       201:
+ *         description: Order created successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               id: 10
+ *               customer_id: 1
+ *               warehouse_id: 1
+ *               products:
+ *                 - product_id: 2
+ *                   quantity: 3
+ */
+router.post("/", createOrder);
 
 export default router;

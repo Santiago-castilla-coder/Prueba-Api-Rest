@@ -1,21 +1,54 @@
 import { Router } from "express";
-import {
-  getWarehouses,
-  toggleWarehouseActive,
-  getActiveWarehousesWithStock
-} from "../controllers/warehouse.controller";
-import { authMiddleware } from "../middlewares/auth.middleware";
-import { checkRole } from "../middlewares/role.middleware";
+import { getWarehouses, createWarehouse } from "../controllers/warehouse.controller";
 
 const router = Router();
 
-// Listar todas (admin + analyst)
-router.get("/", authMiddleware, checkRole(["admin", "analyst"]), getWarehouses);
+/**
+ * @swagger
+ * tags:
+ *   name: Warehouses
+ *   description: Warehouse management
+ */
 
-// Activar/Inactivar una bodega (admin)
-router.patch("/:id/toggle", authMiddleware, checkRole(["admin"]), toggleWarehouseActive);
+/**
+ * @swagger
+ * /warehouses:
+ *   get:
+ *     summary: Get all warehouses
+ *     tags: [Warehouses]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of warehouses
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: 1
+ *                 name: "Central Warehouse"
+ *                 location: "Bogotá"
+ */
+router.get("/", getWarehouses);
 
-// Listar bodegas activas con stock
-router.get("/active/with-stock", authMiddleware, checkRole(["admin", "analyst"]), getActiveWarehousesWithStock);
+/**
+ * @swagger
+ * /warehouses:
+ *   post:
+ *     summary: Create a new warehouse
+ *     tags: [Warehouses]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           example:
+ *             name: "North Distribution Center"
+ *             location: "Medellín"
+ *     responses:
+ *       201:
+ *         description: Warehouse created successfully
+ */
+router.post("/", createWarehouse);
 
 export default router;
