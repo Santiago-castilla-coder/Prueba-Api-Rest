@@ -1,4 +1,4 @@
-import { Model, DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 
 export class OrderProduct extends Model {
@@ -13,5 +13,5 @@ OrderProduct.init(
     product_id: { type: DataTypes.INTEGER, primaryKey: true },
     quantity: { type: DataTypes.INTEGER, allowNull: false },
   },
-  { sequelize, tableName: "order_products", freezeTableName: true, timestamps: false }
+  { sequelize, modelName: "order_product", tableName: "order_products", timestamps: false }
 );

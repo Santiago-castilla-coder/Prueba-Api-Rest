@@ -1,4 +1,4 @@
-import { Model, DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 
 export class Warehouse extends Model {
@@ -9,14 +9,9 @@ export class Warehouse extends Model {
 
 Warehouse.init(
   {
-    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: { type: DataTypes.STRING(128), allowNull: false },
     location: { type: DataTypes.STRING(128), allowNull: false },
   },
-  {
-    sequelize,
-    tableName: "warehouses",
-    freezeTableName: true,
-    timestamps: true,
-  }
+  { sequelize, modelName: "warehouse", tableName: "warehouses", timestamps: false }
 );

@@ -1,85 +1,56 @@
 import fs from "fs";
 import path from "path";
 import csv from "csv-parser";
-import bcrypt from "bcryptjs";
 import { sequelize } from "../config/database";
 import { User } from "../models/user.model";
 import { Customer } from "../models/customer.model";
+import { Address } from "../models/address.model";
 import { Warehouse } from "../models/warehouse.model";
 import { Product } from "../models/product.model";
+import { Order } from "../models/order.model";
+import { OrderProduct } from "../models/orderProduct.model";
 
-// Función genérica para leer CSV
-const readCSV = async (filePath: string): Promise<any[]> => {
-  return new Promise((resolve, reject) => {
-    const results: any[] = [];
+const loadCSV = (file: string) => {
+  const filePath = path.resolve("src/data", file);
+  const data: any[] = [];
+  return new Promise<any[]>((resolve, reject) => {
     fs.createReadStream(filePath)
       .pipe(csv())
-      .on("data", (data) => results.push(data))
-      .on("end", () => resolve(results))
+      .on("data", (row) => data.push(row))
+      .on("end", () => resolve(data))
       .on("error", reject);
   });
 };
 
-const seedDatabase = async () => {
+export const seedDatabase = async () => {
   try {
     await sequelize.sync({ force: true });
-    console.log("🔄 Tablas sincronizadas");
+    console.log("🧹 Tablas recreadas");
 
-    // 🧑‍💻 1. Usuarios
-    const users = await readCSV(path.join(__dirname, "../data/users.csv"));
+    // Cargar CSVs
+    const users = await loadCSV("users.csv");
+    const customers = await loadCSV("customers.csv");
+    const addresses = await loadCSV("addresses.csv");
+    const warehouses = await loadCSV("warehouses.csv");
+    const products = await loadCSV("products.csv");
+    const orders = await loadCSV("orders.csv");
+    const orderProducts = await loadCSV("order_products.csv");
 
-  for (const u of users) {
-    const hashedPassword = await bcrypt.hash(u.password, 10);
-    await User.create({
-      name: u.name,      // debe coincidir con la cabecera exacta
-      email: u.email,    // debe coincidir con la cabecera exacta
-      password: hashedPassword,
-      role: u.role,
-    });
-}
+    // Insertar datos en orden correcto
+    await User.bulkCreate(users);
+    await Customer.bulkCreate(customers);
+    await Address.bulkCreate(addresses);
+    await Warehouse.bulkCreate(warehouses);
+    await Product.bulkCreate(products);
+    await Order.bulkCreate(orders);
+    await OrderProduct.bulkCreate(orderProducts);
 
-
-    console.log("✅ Usuarios cargados");
-
-    // 👥 2. Clientes
-    const customers = await readCSV(path.join(__dirname, "../data/customers.csv"));
-    for (const c of customers) {
-      await Customer.create({
-        document_id: c.document_id,
-        name: c.name,
-        email: c.email,
-      });
-    }
-    console.log("✅ Clientes cargados");
-
-    // 🏭 3. Bodegas
-    const warehouses = await readCSV(path.join(__dirname, "../data/warehouses.csv"));
-    for (const w of warehouses) {
-      await Warehouse.create({
-        name: w.name,
-        location: w.location,
-        active: w.active === "true",
-      });
-    }
-    console.log("✅ Bodegas cargadas");
-
-    // 📦 4. Productos
-    const products = await readCSV(path.join(__dirname, "../data/products.csv"));
-    for (const p of products) {
-      await Product.create({
-        name: p.name,
-        price: parseFloat(p.price),
-        stock: parseInt(p.stock),
-        active: p.active === "true",
-      });
-    }
-    console.log("✅ Productos cargados");
-
-    console.log("🎉 Seeder completado con éxito");
-    process.exit(0);
+    console.log("✅ Datos insertados correctamente en todas las tablas");
   } catch (error) {
-    console.error("❌ Error al ejecutar seeders:", error);
-    process.exit(1);
+    console.error("❌ Error al ejecutar seed:", error);
+  } finally {
+    await sequelize.close();
+    console.log("🔒 Conexión cerrada");
   }
 };
 

@@ -1,4 +1,3 @@
-name,price,stock,active
-Laptop HP,3200000,10,true
-Teclado Logitech,80000,50,true
-Mouse Redragon,60000,30,true
+name,price
+Televisor,2500.50
+Celular,1200.00

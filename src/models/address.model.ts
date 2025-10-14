@@ -1,4 +1,4 @@
-import { Model, DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 
 export class Address extends Model {
@@ -10,15 +10,10 @@ export class Address extends Model {
 
 Address.init(
   {
-    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     street: { type: DataTypes.STRING(128), allowNull: false },
     city: { type: DataTypes.STRING(128), allowNull: false },
     customer_id: { type: DataTypes.INTEGER, allowNull: false },
   },
-  {
-    sequelize,
-    tableName: "addresses",
-    freezeTableName: true,
-    timestamps: true,
-  }
+  { sequelize, modelName: "address", tableName: "addresses", timestamps: false }
 );
